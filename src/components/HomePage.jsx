@@ -1,11 +1,17 @@
 import React, { useState } from "react";
 import { BsFillPlayFill } from "react-icons/bs";
+import Editor from "@monaco-editor/react";
 import axios from "axios";
 
 const HomePage = () => {
   const [code, setCode] = useState("ads");
-  const [linesCount, setLinesCount] = useState(1);
+  const [output, setOutput] = useState("hjsgadjgjhdasghj");
+  //scroll
+  window.addEventListener("scroll", () => {
+    console.log("Hello World");
+  });
 
+  //run code
   const runCode = async () => {
     try {
       await axios
@@ -14,18 +20,15 @@ const HomePage = () => {
         })
         .then((res) => {
           console.log(res.data);
+          setOutput(res.data);
         });
     } catch (err) {
-      if (err.response) console.log(err.response.data.err);
+      // if (err && err.response) setOutput(err.response.data.err);
+      setOutput("An internal error has occured");
+      console.log("asdjkgasdj");
     }
   };
 
-  const handleCodeChange = (e) => {
-    setCode(e.target.value);
-    const lines = (code + "").split("\n");
-    const count = lines.length;
-    setLinesCount(count);
-  };
   return (
     <div className="bg-[#202020] h-[100vh] w-[100vw] text-white">
       {/* Nav Bar} */}
@@ -40,35 +43,33 @@ const HomePage = () => {
       </div>
       {/* Editor part */}
       <div className="h-[calc(100%-50px)] overflow-hidden flex">
-        {/* side numbering panel */}
-        <SideNumberingPanel n={linesCount} />
-        {/*coding box */}
-        <textarea
-          className="bg-[#2e2e2e] text-white h-[100%] resize-none w-[70%] pl-[0.5px] outline-none text-[16px]"
+        <Editor
+          height="100%"
+          width="65%"
+          language="cpp"
           value={code}
-          onChange={(e) => handleCodeChange(e)}
+          theme="vs-dark"
+          className=""
+          onChange={(value) => setCode(value)}
         />
 
-        <div className="w-[5px] bg-white h-[100%]"></div>
-
         {/* output box */}
-        <textarea className="bg-[#2e2e2e] w-[calc(30%-5px)] text-white h-[100%] resize-none" />
-      </div>
-    </div>
-  );
-};
-const SideNumberingPanel = ({ n }) => {
-  let numbers = [];
-  for (let i = 0; i < n; i++) {
-    numbers.push(i + 1);
-  }
-  return (
-    <div className="w-[26px] h-[100%] bg-[#202020] text-[16px] items-center">
-      {numbers.map((i) => (
-        <div key={i} className="h-[24px]">
-          {i}
+        <div className="flex flex-col w-[35%] bg-[#202020]">
+          <textarea
+            className="bg-inherit text-white resize-none w-[100%] h-full pl-[0.5px] border-b-white border-b -2"
+            placeholder="input"
+            data-gramm="false"
+            data-gramm_editor="false"
+            data-enable-grammarly="false"
+          />
+          <div
+            className="bg-inherit w-[100%] text-white resize-none h-full pl-[0.5px] outline-none"
+            readOnly
+          >
+            {output}
+          </div>
         </div>
-      ))}
+      </div>
     </div>
   );
 };
