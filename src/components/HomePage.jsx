@@ -2,14 +2,11 @@ import React, { useState } from "react";
 import { BsFillPlayFill } from "react-icons/bs";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
-
 const HomePage = () => {
-  const [code, setCode] = useState("ads");
-  const [output, setOutput] = useState("hjsgadjgjhdasghj");
-  //scroll
-  window.addEventListener("scroll", () => {
-    console.log("Hello World");
-  });
+  const [code, setCode] = useState(
+    '#include<iostream>\nusing namespace std;\nint main(){\n  cout << "Hello World";\n  return 0;\n}'
+  );
+  const [output, setOutput] = useState("");
 
   //run code
   const runCode = async () => {
@@ -20,12 +17,16 @@ const HomePage = () => {
         })
         .then((res) => {
           console.log(res.data);
-          setOutput(res.data);
+          setOutput(res.data.output);
         });
     } catch (err) {
-      // if (err && err.response) setOutput(err.response.data.err);
-      setOutput("An internal error has occured");
-      console.log("asdjkgasdj");
+      console.log(JSON.stringify(err));
+      if (err.response) {
+        console.log(err.response.data.err.stderr);
+        setOutput(err.response.data.err.stderr);
+      } else {
+        console.log(err);
+      }
     }
   };
 
@@ -49,23 +50,20 @@ const HomePage = () => {
           language="cpp"
           value={code}
           theme="vs-dark"
-          className=""
+          defaultLanguage="cpp"
           onChange={(value) => setCode(value)}
         />
 
         {/* output box */}
         <div className="flex flex-col w-[35%] bg-[#202020]">
           <textarea
-            className="bg-inherit text-white resize-none w-[100%] h-full pl-[0.5px] border-b-white border-b -2"
+            className="bg-inherit text-white resize-none w-[100%] h-[50%] pl-[0.5px] border-b-white border-b-2 "
             placeholder="input"
             data-gramm="false"
             data-gramm_editor="false"
             data-enable-grammarly="false"
           />
-          <div
-            className="bg-inherit w-[100%] text-white resize-none h-full pl-[0.5px] outline-none"
-            readOnly
-          >
+          <div className="bg-inherit w-[100%] text-white resize-none h-[50%] pl-[0.5px] outline-none text-[12px]">
             {output}
           </div>
         </div>
